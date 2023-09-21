@@ -3,8 +3,9 @@
 setlocal
 
 set "ASM=nasm.exe"
-set "LINKER=link.exe"
+set "LINKER=link.exe /nologo"
 set "ASMFLAGS=-fwin64 -g"
+set "MSFLAGS="
 set "LINKFLAGS=/nodefaultlib /subsystem:console /debug"
 set "LIBS=ntdll.lib"
 set "INC=-I%~dp0inc"
@@ -26,8 +27,4 @@ for /r %SOURCE% %%x in (*.asm) do (
 )
 
 echo Linking %BINARY% from files in %OBJ%
-for /r %OBJ% %%x in (*.obj) do (
-	echo Including %%x
-	set "OBJS=%OBJS% %%x"
-)
-%LINKER% %LINKFLAGS% /out:%BINARY% %OBJS% %LIBS%
+%LINKER% %LINKFLAGS% /out:%BINARY% %OBJ%\*.obj %LIBS%
