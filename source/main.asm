@@ -8,8 +8,8 @@ mainCRTStartup:
 	push rbp
 	mov rbp, rsp
 
-	mov ecx, NtCurrentProcess
-	xor edx, edx
+	mov rcx, NtCurrentProcess
+	mov edx, STATUS_INVALID_PARAMETER
 	xor r8, r8
 	xor r9, r9
 	call NtTerminateProcess

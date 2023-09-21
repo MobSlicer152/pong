@@ -4,8 +4,8 @@ setlocal
 
 set "ASM=nasm.exe"
 set "LINKER=link.exe"
-set "ASMFLAGS=-fwin64"
-set "LINKFLAGS=/nodefaultlib /subsystem:console"
+set "ASMFLAGS=-fwin64 -g"
+set "LINKFLAGS=/nodefaultlib /subsystem:console /debug"
 set "LIBS=ntdll.lib"
 set "INC=-I%~dp0inc"
 set "SOURCE=%~dp0source"
