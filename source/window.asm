@@ -13,6 +13,7 @@ SetupWindow:
 
 	push r12
 	push r13
+
 													; Variables
 	sub rsp, sizeof(WNDCLASSEX)
 
@@ -31,8 +32,8 @@ SetupWindow:
 	lea r13, [rel className]						; className -> lpszClassName
 	mov qword [r12 + WNDCLASSEX.lpszClassName], r13
 
-                                                    ; RegisterClassExW
-	sub rsp, 32									    ; Shadow space
+													; RegisterClassExW
+	sub rsp, 32										; Shadow space
 	mov rcx, r12									; Window class structure
 	call RegisterClassExW
 	add rsp, 32										; Clear shadow space
@@ -58,10 +59,10 @@ WindowProcedure:
 
 	section .data
 className:
-	dw "PongClass", 0
+	dw L("PongClass"), 0
 .size:
 	dq $ - className
 windowName:
-	dw "Pong"
+	dw L("Pong"), 0
 .size:
 	dq $ - windowName
