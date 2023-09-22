@@ -45,7 +45,7 @@ def link(obj_dir, binary, linker, link_flags, lib_dirs, libs):
         + lib_dirs
         + ["/out:" + binary]
         + obj_files
-        + [libs]
+        + libs.split()
     )
     subprocess.run(link_command, check=True)
 
@@ -101,7 +101,7 @@ def main():
     )
     parser.add_argument(
         "--link_flags",
-        default="/nodefaultlib /subsystem:console /debug",
+        default="/nodefaultlib /subsystem:console /debug /machine:x64",
         help="Linker flags (default: /nodefaultlib /subsystem:console /debug)",
     )
     parser.add_argument(
@@ -110,7 +110,7 @@ def main():
         help="Library search directories (default: lib)",
     )
     parser.add_argument(
-        "--libs", default="ntdll.lib", help="Library dependencies (default: ntdll.lib)"
+        "--libs", default="ntdll.lib user32.lib", help="Library dependencies (default: ntdll.lib)"
     )
     parser.add_argument(
         "--clean",

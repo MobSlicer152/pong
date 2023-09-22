@@ -1,4 +1,0 @@
-LIBRARY win32u
-
-EXPORTS
-	NtUserRegisterClassExWOW

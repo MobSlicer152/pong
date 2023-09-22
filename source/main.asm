@@ -7,10 +7,14 @@
 	section .text
 	global mainCRTStartup
 mainCRTStartup:
+	sub rsp, 8						; Align to 16 bytes
+
 	push rbp
 	mov rbp, rsp
 
+	sub rsp, 32
 	call SetupWindow
+	add rsp, 32
 
 	mov rcx, NtCurrentProcess()
 	mov edx, STATUS_SUCCESS
