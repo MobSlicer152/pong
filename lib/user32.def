@@ -1,6 +1,0 @@
-LIBRARY user32
-
-EXPORTS
-	RegisterClassExW
-	CreateWindowExW
-	ShowWindow
