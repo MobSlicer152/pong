@@ -1,14 +1,7 @@
         bits 64
 
-        %include "nasmx.inc"
-        %include "win32/kernel32.inc"
-        %include "win32/user32.inc"
         %include "pong.inc"
-
-        extern RegisterClassExW
-        extern CreateWindowExW
-        extern ExitProcess
-        extern ShowWindow
+        %include "win32.inc"
 
         section .text
 
@@ -22,6 +15,7 @@ SetupWindow:
         push r13
 
 ; Variables
+        ALIGN 16
         sub rsp, sizeof(WNDCLASSEXW)
 
 ; Clear WNDCLASSEXW
@@ -32,43 +26,54 @@ SetupWindow:
         mov ecx, sizeof(WNDCLASSEXW)
         rep stosb
 
+; Set WNDCLASSEXW fields
         mov r13, sizeof(WNDCLASSEXW)    ; sizeof(WNDCLASSEXW) -> cbSize
         mov dword [r12 + WNDCLASSEXW.cbSize], r13d
-        lea r13, [rel WindowProcedure] ; WindowProcedure -> lpfnWndProc
+        lea r13, [rel WindowProcedure]  ; WindowProcedure -> lpfnWndProc
         mov qword [r12 + WNDCLASSEXW.lpfnWndProc], r13
-        lea r13, [rel className]       ; className -> lpszClassName
+        lea r13, [rel className]        ; className -> lpszClassName
         mov qword [r12 + WNDCLASSEXW.lpszClassName], r13
 
+; GetModuleHandleA(NULL) -> hInstance
+        sub rsp, 32
+        xor eax, eax
+        call GetModuleHandleA
+        add rsp, 32
+        mov qword [r12 + WNDCLASSEXW.hInstance], rax
+
 ; RegisterClassExW
-        sub rsp, 32                    ; Shadow space
-        mov rcx, r12                   ; Window class structure
+        sub rsp, 32                     ; Shadow space
+        mov rcx, r12                    ; Window class structure
         call RegisterClassExW
-        add rsp, 32                    ; Clear shadow space
+        add rsp, 32                     ; Clear shadow space
 
 ; CreateWindowExW
-        sub rsp, 32 + 4 + 4 + 4 + 4 + 8 + 8 + 8 + 8
+        sub rsp, 80
         xor ecx, ecx                   ; No extended styles
-        mov rdx, qword [r12 + WNDCLASSEXW.lpszClassName] ; Class name
-        lea r8, [rel windowName]       ; Window name
-        mov r9, WS_OVERLAPPEDWINDOW    ; Generic window style
-        mov r13, CW_USEDEFAULT         ; CW_USEDEFAULT for X, Y, nWidth, nHeight
-        mov dword [rsp + 44], r13d
-        mov dword [rsp + 40], r13d
-        mov dword [rsp + 36], r13d
-        mov dword [rsp + 32], r13d
-        mov qword [rsp + 24], rcx      ; RCX is already zeroed, and rest of parameters are NULL
-        mov qword [rsp + 16], rcx
-        mov qword [rsp + 8], rcx
-        mov qword [rsp + 0], rcx
+        mov rdx, qword [r12 + WNDCLASSEXW.lpszClassName]
+        lea r8, [rel windowName]        ; Window name
+        mov r9, WS_OVERLAPPEDWINDOW     ; Generic window style
+        mov r13, CW_USEDEFAULT          ; CW_USEDEFAULT for X, Y, nWidth, nHeight
+        mov dword [rsp + 40], r13d ; X
+        mov dword [rsp + 36], r13d ; Y
+        mov dword [rsp + 32], r13d ; nWidth
+        mov dword [rsp + 28], r13d ; nHeight
+        mov qword [rsp + 24], rcx  ; hWndParent
+        mov qword [rsp + 16], rcx  ; hMenu
+        mov qword [rsp + 8], rcx   ; hInstance
+        mov qword [rsp + 0], rcx   ; lParam
         call CreateWindowExW
-        add rsp, 32
+        add rsp, 80
 
 ; Check window
         cmp rax, 0
         jne .success
 
 .error:
-        mov ecx, 1
+        sub rsp, 32
+        call GetLastError
+        add rsp, 32
+        mov ecx, eax
         call ExitProcess
 .success:
         mov [rel window], rax

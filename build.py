@@ -33,6 +33,34 @@ def assemble(source_dir, obj_dir, asm, asm_flags, inc):
                     print(f"Skipping {source_file}, object file up to date.")
 
 
+def compile(source_dir, obj_dir, cc, cc_flags, inc):
+    inc = ["-I" + path for path in inc.split()]
+    for root, _, files in os.walk(source_dir):
+        for filename in files:
+            if filename.endswith(".c"):
+                source_file = os.path.join(root, filename)
+                obj_file = os.path.join(obj_dir, os.path.splitext(filename)[0] + ".obj")
+
+                # Check if obj_file exists and its modification time is newer than source_file
+                if not os.path.exists(obj_file) or os.path.getmtime(
+                    obj_file
+                ) < os.path.getmtime(source_file):
+                    print(f"Compiling {source_file} into {obj_file}")
+                    subprocess.run(
+                        cc.split()
+                        + inc
+                        + cc_flags.split()
+                        + [source_file, "-c", "-Fo" + obj_file],
+                        check=True,
+                    )
+
+                    if not os.path.exists(obj_file):
+                        print(f"Failed to assemble {source_file}, stopping build")
+                        exit(1)
+                else:
+                    print(f"Skipping {source_file}, object file up to date.")
+
+
 def link(obj_dir, binary, linker, link_flags, lib_dirs, libs):
     obj_files = [
         os.path.join(obj_dir, f) for f in os.listdir(obj_dir) if f.endswith(".obj")
@@ -110,7 +138,7 @@ def main():
         help="Library search directories (default: lib)",
     )
     parser.add_argument(
-        "--libs", default="ntdll.lib user32.lib", help="Library dependencies (default: ntdll.lib)"
+        "--libs", default="kernel32.lib user32.lib", help="Library dependencies (default: kernel32.lib user32.lib)"
     )
     parser.add_argument(
         "--clean",
@@ -131,6 +159,9 @@ def main():
 
     # Assemble source files
     assemble(source, obj, args.asm, args.asm_flags, inc)
+    
+    # Compile C code
+    compile(source, obj, "cl", "-nologo -Zi", inc)
 
     # Link the binary
     binary_path = os.path.join(args.out, args.binary)
