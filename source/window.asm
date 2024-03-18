@@ -53,14 +53,15 @@ SetupWindow:
         lea r8, [rel windowName]        ; Window name
         mov r9, WS_OVERLAPPEDWINDOW     ; Generic window style
         mov r13, CW_USEDEFAULT          ; CW_USEDEFAULT for X, Y, nWidth, nHeight
-        mov dword [rsp + 32 + 0], r13d  ; X
-        mov dword [rsp + 32 + 4], r13d  ; Y
-        mov dword [rsp + 32 + 8], r13d  ; nWidth
-        mov dword [rsp + 32 + 12], r13d ; nHeight
-        mov qword [rsp + 32 + 20], rcx  ; hWndParent
-        mov qword [rsp + 32 + 28], rcx  ; hMenu
-        mov qword [rsp + 32 + 36], rcx  ; hInstance
-        mov qword [rsp + 32 + 44], rcx  ; lParam
+        mov qword [rsp + 32 + 0], r13   ; X
+        mov qword [rsp + 32 + 8], r13   ; Y
+        mov qword [rsp + 32 + 16], r13  ; nWidth
+        mov qword [rsp + 32 + 24], r13  ; nHeight
+        mov qword [rsp + 32 + 32], rcx  ; hWndParent
+        mov qword [rsp + 32 + 40], rcx  ; hMenu
+        mov r13, qword [r12 + WNDCLASSEXW.hInstance]
+        mov qword [rsp + 32 + 48], r13  ; hInstance
+        mov qword [rsp + 32 + 56], rcx  ; lpParam
         call CreateWindowExW
         add rsp, 80
 
@@ -89,15 +90,17 @@ SetupWindow:
         pop rbp
         ret
 
+
         global WindowProcedure
 WindowProcedure:
         push rbp
         mov rbp, rsp
 
-        mov eax, 0
+        mov eax, 1
 
         pop rbp
         ret
+
 
         section .data
 className:
@@ -108,6 +111,7 @@ windowName:
         dw L("Pong"), 0
 .size:
         dq $ - windowName
+
 
         section .bss
 window:

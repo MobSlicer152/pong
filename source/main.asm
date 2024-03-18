@@ -4,7 +4,9 @@
         %include "window.inc"
         %include "win32.inc"
 
+
         section .text
+
         global mainCRTStartup
 mainCRTStartup:
         push rbp
