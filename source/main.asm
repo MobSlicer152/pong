@@ -1,8 +1,10 @@
         bits 64
 
         %include "pong.inc"
-        %include "window.inc"
+
+        %include "framebuffer.inc"
         %include "win32.inc"
+        %include "window.inc"
 
 
         section .text
@@ -16,9 +18,13 @@ mainCRTStartup:
         call SetupWindow
         add rsp, 32
 
+        sub rsp, 32
+        call SetupFramebuffer
+        add rsp, 32
+
 .mainLoop:
         sub rsp, 32
-        call Update
+        call ProcessMessages
         add rsp, 32
         test eax, eax
         jz .mainLoopEnd

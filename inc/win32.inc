@@ -3,14 +3,38 @@
 		extern GetLastError
 		extern GetModuleHandleA
 
+; gdi32
+		extern CreateCompatibleDC
+		extern CreateDIBSection
+		extern DeleteDC
+		extern DeleteObject
+		extern GetWindowDC
+		extern ReleaseDC
+		extern StretchDIBits
+
 ; user32
     	extern CreateWindowExW
 		extern DefWindowProcW
 		extern DispatchMessageW
+		extern GetClientRect
 		extern PeekMessageW
     	extern RegisterClassExW
     	extern ShowWindow
 		extern TranslateMessage
+
+		struc BITMAPINFOHEADER
+			.biSize: resd 1
+			.biWidth: resd 1
+			.biHeight: resd 1
+			.biPlanes: resw 1
+			.biBitCount: resw 1
+			.biCompression: resd 1
+			.biSizeImage: resd 1
+			.biXPelsPerMeter: resd 1
+			.biYPelsPerMeter: resd 1
+			.biClrUsed: resd 1
+			.biClrImportant: resd 1
+		endstruc
 
 		struc MSG
 			.hwnd: resq 1

@@ -77,10 +77,16 @@ SetupWindow:
         mov ecx, eax
         call ExitProcess
 .success:
-        mov [rel window], rax
-        mov rcx, [rel window]
+        mov [rel g_window], rax
+        mov rcx, [rel g_window]
         mov edx, SW_SHOWNORMAL
         call ShowWindow
+
+; Get size
+        sub rsp, 32 + sizeof(RECT)
+        mov rcx, rsp + 32
+        call GetClientRect
+        add rsp, 32
 
 ; Stack cleanup
         add rsp, sizeof(WNDCLASSEXW)
@@ -92,8 +98,9 @@ SetupWindow:
         ret
 
 
-        global Update
-Update:
+; Has the message loop
+        global ProcessMessages
+ProcessMessages:
         push rbp
         mov rbp, rsp
 
@@ -142,6 +149,7 @@ Update:
         ret
 
 
+; Window procedure, pretty basic
         global WindowProcedure
 WindowProcedure:
         push rbp
@@ -181,7 +189,12 @@ windowName:
 
 
         section .bss
-window:
+        global g_window
+g_window:
         resq 1
+g_width:
+        resd 1
+g_height:
+        resd 1
 windowClosed:
         resb 1
