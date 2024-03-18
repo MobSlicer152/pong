@@ -51,7 +51,8 @@ SetupWindow:
         xor ecx, ecx                    ; No extended styles
         mov rdx, qword [r12 + WNDCLASSEXW.lpszClassName]
         lea r8, [rel windowName]        ; Window name
-        mov r9, WS_OVERLAPPEDWINDOW     ; Generic window style
+        ;mov r9, WS_OVERLAPPEDWINDOW     ; Generic window style
+        mov r9, PONG_STYLE
         mov r13, CW_USEDEFAULT          ; CW_USEDEFAULT for X, Y, nWidth, nHeight
         mov qword [rsp + 32 + 0], r13   ; X
         mov qword [rsp + 32 + 8], r13   ; Y
@@ -91,13 +92,79 @@ SetupWindow:
         ret
 
 
+        global Update
+Update:
+        push rbp
+        mov rbp, rsp
+
+        push r12
+
+        sub rsp, sizeof(MSG)
+        mov r12, rsp
+
+.messageLoop:
+        sub rsp, 40
+        mov rcx, r12
+        xor edx, edx
+        xor r8, r8
+        xor r9, r9
+        mov eax, PM_REMOVE
+        mov qword [rsp + 32 + 0], rax
+        call PeekMessageW
+        add rsp, 40
+        cmp eax, 0
+        je .messageLoopEnd
+
+        sub rsp, 32
+        mov rcx, r12
+        call TranslateMessage
+        add rsp, 32
+
+        sub rsp, 32
+        mov rcx, r12
+        call DispatchMessageW
+        add rsp, 32
+
+        jmp .messageLoop
+.messageLoopEnd:
+
+; EAX is already zero because PeekMessageW has to return 0 to get here
+; return !windowClosed
+        mov al, byte [rel windowClosed]
+        test al, al
+        setz al
+
+        add rsp, sizeof(MSG)
+
+        pop r12
+
+        pop rbp
+        ret
+
+
         global WindowProcedure
 WindowProcedure:
         push rbp
         mov rbp, rsp
 
-        mov eax, 1
+        cmp edx, WM_CLOSE
+        je .handleClose
+        cmp edx, WM_DESTROY
+        je .handleClose
+        jmp .handleOther
 
+.handleClose:
+        mov al, 1
+        mov byte [rel windowClosed], al
+        xor eax, eax
+        jmp .return
+.handleOther:
+        sub rsp, 32
+        call DefWindowProcW
+        add rsp, 32
+        jmp .return
+
+.return:
         pop rbp
         ret
 
@@ -116,3 +183,5 @@ windowName:
         section .bss
 window:
         resq 1
+windowClosed:
+        resb 1

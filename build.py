@@ -161,7 +161,7 @@ def main():
     assemble(source, obj, args.asm, args.asm_flags, inc)
     
     # Compile C code
-    compile(source, obj, "cl", "-nologo -Zi", inc)
+    #compile(source, obj, "cl", "-nologo -Zi", inc)
 
     # Link the binary
     binary_path = os.path.join(args.out, args.binary)

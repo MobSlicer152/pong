@@ -5,8 +5,28 @@
 
 ; user32
     	extern CreateWindowExW
+		extern DefWindowProcW
+		extern DispatchMessageW
+		extern PeekMessageW
     	extern RegisterClassExW
     	extern ShowWindow
+		extern TranslateMessage
+
+		struc MSG
+			.hwnd: resq 1
+			.message: resd 1
+			.wParam: resq 1
+			.lParam: resq 1
+			.time: resd 1
+			.pt: resd 2
+		endstruc
+
+		struc RECT
+			.left: resd 1
+			.top: resd 1
+			.right: resd 1
+			.bottom: resd 1
+		endstruc
 
 		struc WNDCLASSEXW
 			.cbSize: resd 1
@@ -25,7 +45,12 @@
 
 		%define CW_USEDEFAULT 80000000h
 
+		%define PM_REMOVE 0001h
+
 		%define SW_SHOWNORMAL 1
+
+		%define WM_DESTROY 0002h
+		%define WM_CLOSE 0010h
 
 		%define WS_CAPTION 00C00000h
 		%define WS_MAXIMIZEBOX 00010000h
@@ -34,5 +59,6 @@
 		%define WS_SYSMENU 00080000h
 		%define WS_THICKFRAME 00040000h
 
+		%define PONG_STYLE (WS_CAPTION | WS_MINIMIZEBOX | WS_OVERLAPPED | WS_SYSMENU)
 		%define WS_OVERLAPPEDWINDOW (WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | \
 				WS_OVERLAPPED | WS_SYSMENU | WS_THICKFRAME)

@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "windows.h": "c",
-        "winuser.h": "c"
+        "*.rh": "c"
     }
 }
