@@ -9,7 +9,6 @@
 mainCRTStartup:
         push rbp
         mov rbp, rsp
-        ALIGN 16
 
         sub rsp, 32
         call SetupWindow

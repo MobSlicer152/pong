@@ -15,7 +15,6 @@ SetupWindow:
         push r13
 
 ; Variables
-        ALIGN 16
         sub rsp, sizeof(WNDCLASSEXW)
 
 ; Clear WNDCLASSEXW
@@ -49,19 +48,19 @@ SetupWindow:
 
 ; CreateWindowExW
         sub rsp, 80
-        xor ecx, ecx                   ; No extended styles
+        xor ecx, ecx                    ; No extended styles
         mov rdx, qword [r12 + WNDCLASSEXW.lpszClassName]
         lea r8, [rel windowName]        ; Window name
         mov r9, WS_OVERLAPPEDWINDOW     ; Generic window style
         mov r13, CW_USEDEFAULT          ; CW_USEDEFAULT for X, Y, nWidth, nHeight
-        mov dword [rsp + 40], r13d ; X
-        mov dword [rsp + 36], r13d ; Y
-        mov dword [rsp + 32], r13d ; nWidth
-        mov dword [rsp + 28], r13d ; nHeight
-        mov qword [rsp + 24], rcx  ; hWndParent
-        mov qword [rsp + 16], rcx  ; hMenu
-        mov qword [rsp + 8], rcx   ; hInstance
-        mov qword [rsp + 0], rcx   ; lParam
+        mov dword [rsp + 32 + 0], r13d  ; X
+        mov dword [rsp + 32 + 4], r13d  ; Y
+        mov dword [rsp + 32 + 8], r13d  ; nWidth
+        mov dword [rsp + 32 + 12], r13d ; nHeight
+        mov qword [rsp + 32 + 20], rcx  ; hWndParent
+        mov qword [rsp + 32 + 28], rcx  ; hMenu
+        mov qword [rsp + 32 + 36], rcx  ; hInstance
+        mov qword [rsp + 32 + 44], rcx  ; lParam
         call CreateWindowExW
         add rsp, 80
 
