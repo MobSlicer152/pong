@@ -10,7 +10,18 @@ SetupFramebuffer:
         push rbp
         mov rbp, rsp
 
-        
+
+
+        pop rbp
+        ret
+
+
+        global DestroyFramebuffer
+DestroyFramebuffer:
+        push rbp
+        mov rbp, rsp
+
+
 
         pop rbp
         ret
@@ -20,6 +31,8 @@ SetupFramebuffer:
 windowDc:
         resq 1
 framebufferDc:
+        resq 1
+framebuffer:
         resq 1
 framebufferBitmapInfo:
         resb sizeof(BITMAPINFOHEADER)

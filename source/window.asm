@@ -82,14 +82,24 @@ SetupWindow:
         mov edx, SW_SHOWNORMAL
         call ShowWindow
 
-; Get size
+; Get size (and save the address of the RECT in r12, because it's overwritten)
         sub rsp, 32 + sizeof(RECT)
-        mov rcx, rsp + 32
+        mov rcx, qword [rel g_window]
+        mov rdx, rsp
+        add rdx, 32
+        mov r12, rdx
         call GetClientRect
         add rsp, 32
 
+        mov edx, dword [r12 + RECT.right]
+        sub edx, dword [r12 + RECT.left]
+        mov dword [rel g_width], edx
+        mov edx, dword [r12 + RECT.bottom]
+        sub edx, dword [r12 + RECT.top]
+        mov dword [rel g_height], edx
+
 ; Stack cleanup
-        add rsp, sizeof(WNDCLASSEXW)
+        add rsp, sizeof(WNDCLASSEXW) + sizeof(RECT)
 
         pop r13
         pop r12
@@ -147,6 +157,11 @@ ProcessMessages:
 
         pop rbp
         ret
+
+
+; Destroy the window
+        global DestroyWindow
+
 
 
 ; Window procedure, pretty basic
