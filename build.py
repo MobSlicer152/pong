@@ -112,10 +112,11 @@ def main():
         default=get_linker(),
         help=f"Path to the linker (default: {get_linker()})",
     )
+    default_asm_flags = "-fwin64 -g"
     parser.add_argument(
         "--asm_flags",
-        default="-fwin64 -g",
-        help="Assembler flags (default: -fwin64 -g)",
+        default=default_asm_flags,
+        help=f"Assembler flags (default: {default_asm_flags})",
     )
     parser.add_argument(
         "--out",
@@ -127,18 +128,20 @@ def main():
         default="pong.exe",
         help="Name of the output binary (default: pong.exe)",
     )
+    default_link_flags = "/nodefaultlib /subsystem:console /debug /machine:x64"
     parser.add_argument(
         "--link_flags",
-        default="/nodefaultlib /subsystem:console /debug /machine:x64",
-        help="Linker flags (default: /nodefaultlib /subsystem:console /debug)",
+        default=default_link_flags,
+        help=f"Linker flags (default: {default_link_flags})",
     )
     parser.add_argument(
         "--lib_dirs",
         default=os.path.join(root, "lib"),
         help="Library search directories (default: lib)",
     )
+    default_libs = "kernel32.lib gdi32.lib user32.lib"
     parser.add_argument(
-        "--libs", default="kernel32.lib user32.lib", help="Library dependencies (default: kernel32.lib user32.lib)"
+        "--libs", default=default_libs, help=f"Library dependencies (default: {default_libs})"
     )
     parser.add_argument(
         "--clean",
@@ -161,7 +164,7 @@ def main():
     assemble(source, obj, args.asm, args.asm_flags, inc)
     
     # Compile C code
-    #compile(source, obj, "cl", "-nologo -Zi", inc)
+    compile(source, obj, "cl", "-nologo -Zi", inc)
 
     # Link the binary
     binary_path = os.path.join(args.out, args.binary)

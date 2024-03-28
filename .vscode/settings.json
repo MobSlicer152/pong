@@ -1,5 +1,10 @@
 {
     "files.associations": {
-        "*.rh": "c"
-    }
+        "*.inc": "nasm",
+        "*.asm": "nasm"
+    },
+    "nasm.extraFlags": [
+        "-Iinc"
+    ],
+    "nasm.outputFormat": "win64"
 }

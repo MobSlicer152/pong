@@ -1,2 +1,2 @@
+        extern DisplayFramebuffer
         extern SetupFramebuffer
-        extern DestroyFramebuffer
