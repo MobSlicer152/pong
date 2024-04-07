@@ -1,7 +1,10 @@
-#include <windows.h>
+#include <stdio.h>
 
-int   WINAPI StretchDIBits2(_In_ HDC hdc, _In_ int xDest, _In_ int yDest, _In_ int DestWidth, _In_ int DestHeight, _In_ int xSrc, _In_ int ySrc, _In_ int SrcWidth, _In_ int SrcHeight,
-    _In_opt_ CONST VOID* lpBits, _In_ CONST BITMAPINFO* lpbmi, _In_ UINT iUsage, _In_ DWORD rop)
+#if 0
+extern __declspec(dllimport) unsigned int DbgPrint(char* format, ...);
+
+void FillRectangle(int width, int height, int x, int y, int color)
 {
-    return StretchDIBits(hdc, xDest, yDest, DestWidth, DestHeight, xSrc, ySrc, SrcWidth, SrcHeight, lpBits, lpbmi, iUsage, rop);
+    DbgPrint("%d %d %d %d %X", width, height, x, y, color);
 }
+#endif

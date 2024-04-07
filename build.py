@@ -50,7 +50,7 @@ def compile(source_dir, obj_dir, cc, cc_flags, inc):
                         cc.split()
                         + inc
                         + cc_flags.split()
-                        + [source_file, "-c", "-Fo" + obj_file],
+                        + [source_file, "-c", "-o" + obj_file],
                         check=True,
                     )
 
@@ -139,7 +139,7 @@ def main():
         default=os.path.join(root, "lib"),
         help="Library search directories (default: lib)",
     )
-    default_libs = "kernel32.lib gdi32.lib user32.lib"
+    default_libs = "kernel32.lib gdi32.lib ntdll.lib user32.lib"
     parser.add_argument(
         "--libs", default=default_libs, help=f"Library dependencies (default: {default_libs})"
     )
@@ -164,7 +164,7 @@ def main():
     assemble(source, obj, args.asm, args.asm_flags, inc)
     
     # Compile C code
-    compile(source, obj, "cl", "-nologo -Zi", inc)
+    compile(source, obj, "clang", "--target=x86_64-mingw-w64 -gcodeview", inc)
 
     # Link the binary
     binary_path = os.path.join(args.out, args.binary)

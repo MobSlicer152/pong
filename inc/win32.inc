@@ -11,7 +11,7 @@
         extern GetWindowDC
         extern ReleaseDC
         extern SelectObject
-        extern StretchDIBits2
+        extern StretchDIBits
 
 ; user32
         extern AdjustWindowRect

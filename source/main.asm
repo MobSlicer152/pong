@@ -29,7 +29,14 @@ mainCRTStartup:
         test eax, eax
         jz   .mainLoopEnd
 
+        sub rsp, 32
+        mov ecx, 0FF9000FFh
+        call ClearFramebuffer
+        add rsp, 32
+
+        sub rsp, 32
         call DisplayFramebuffer
+        add rsp, 32
 
         jmp .mainLoop
 .mainLoopEnd:

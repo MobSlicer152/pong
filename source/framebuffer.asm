@@ -17,7 +17,7 @@ SetupFramebuffer:
 ; Get extra width and height to account for when displaying the framebuffer
         sub rsp,                       32 + sizeof(RECT)
         mov r12,                       rsp
-        add rcx,                       32
+        add r12,                       32
         xor eax,                       eax
         mov dword [r12 + RECT.left],   eax
         mov eax,                       [rel g_width]
@@ -68,7 +68,7 @@ SetupFramebuffer:
         mov  [rel framebufferDc], rax
 
 ; Framebuffer
-        sub  rsp,                  32 + 12
+        sub  rsp,                  32 + 16
         mov  rcx,                  [rel framebufferDc]
         mov  rdx,                  r12                 ; &framebufferBitmapInfo
         xor  r8,                   r8
@@ -76,7 +76,7 @@ SetupFramebuffer:
         mov  qword [rsp + 32 + 0], r8
         mov  dword [rsp + 32 + 8], r8d
         call CreateDIBSection
-        add  rsp,                  32 + 12
+        add  rsp,                  32 + 16
 
 ; Error check
         cmp rax, 0
@@ -101,13 +101,75 @@ SetupFramebuffer:
         pop rbp
         ret
 
+        ; void FillRectangle(RECT rect, DWORD color);
+        global FillRectangle
+FillRectangle:
+        push rbp
+        mov rbp, rsp
+
+        ; return addr + base ptr = 16 bytes on stack before shadow
+        mov eax, dword [rcx + RECT.left]
+        mov r8d, dword [rcx + RECT.right]
+        mov r9d, dword [rcx + RECT.top]
+        mov r11d, dword [rcx + RECT.bottom]
+
+        ; ESI = FRAMEBUFFER_WIDTH * y + x
+        mov esi, FRAMEBUFFER_WIDTH
+        imul esi, r9d
+        add esi, eax
+
+.loop:
+        ; if (ESI >= bottom) break;
+        cmp esi, r11d
+        jae .endloop
+
+        mov eax, edx ; color
+        mov ecx, r8d ; width (right - left)
+        sub ecx, eax
+        mov rdi, [rel framebuffer]
+        add rdi, rsi
+        rep stosd
+
+        add esi, FRAMEBUFFER_WIDTH ; next row
+
+        jmp .loop
+.endloop:
+
+        pop rbp
+        ret
+
+
+        global ClearFramebuffer
+ClearFramebuffer:
+        push rbp
+        mov rbp, rsp
+
+        xor eax, eax
+        sub rsp, sizeof(RECT)
+        mov dword [rsp + RECT.left], eax
+        mov dword [rsp + RECT.top], eax
+        mov eax, FRAMEBUFFER_WIDTH
+        mov dword [rsp + RECT.right], eax
+        mov eax, FRAMEBUFFER_HEIGHT
+        mov dword [rsp + RECT.bottom], eax
+
+        sub rsp, 32
+        mov edx, ecx
+        mov rcx, rsp
+        add rcx, 32
+        call FillRectangle
+        add rsp, 32
+        
+        pop rbp
+        ret
+
 
         global DisplayFramebuffer
 DisplayFramebuffer:
         push rbp
         mov  rbp, rsp
 
-        sub  rsp,                   32 + 72
+        sub  rsp,                   32 + 80
         mov  rcx,                   [rel windowDc] ; hdc = windowDc
         mov  edx,                   [rel extraWidth] ; xDest = extraWidth
         mov  r8d,                   [rel extraHeight] ; yDest = height + extraHeight
@@ -131,8 +193,8 @@ DisplayFramebuffer:
         mov  dword [rsp + 32 + 56], eax ; iUsage = DIB_RGB_COLORS
         mov  eax,                   SRCCOPY
         mov  dword [rsp + 32 + 64], eax ; rop = SRCCOPY
-        call StretchDIBits2
-        add  rsp,                   32 + 72
+        call StretchDIBits
+        add  rsp,                   32 + 80
 
         pop rbp
         ret
