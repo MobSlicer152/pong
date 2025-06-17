@@ -1,0 +1,5 @@
+LIBRARY kernel32
+EXPORTS
+	ExitProcess@4
+	GetModuleHandleA@4
+	GetLastError@0

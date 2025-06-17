@@ -1,0 +1,9 @@
+EXPORTS
+	CreateWindowExA@48
+	RegisterClassExA@4
+	DefWindowProcA@16
+	LoadCursorA@8
+	ShowWindow@8
+	PeekMessageA@20
+	TranslateMessage@4
+	DispatchMessageA@4
